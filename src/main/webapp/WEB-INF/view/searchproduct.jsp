@@ -1,5 +1,7 @@
+<%@page isELIgnored="false" %>
 <html>
 <body>
+<h3>Welcome ${userid}</h3>
 <h3>Product Search Form</h3>
 <hr>
 	<form action="SearchProduct">

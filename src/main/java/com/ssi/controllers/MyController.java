@@ -4,20 +4,44 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ssi.dao.ProductDAO;
 import com.ssi.entities.Product;
 
 @Controller
+@SessionAttributes(names= {"userid","product"})
 public class MyController {
 
 @Autowired
-ProductDAO productDAO;	
+ProductDAO productDAO;
+
+//mapping user parameter with userid attribute from session
+@RequestMapping("fromsession")
+public void showFromSession(@SessionAttribute("userid") String user, @CookieValue("JSESSIONID") String cookie) {
+	System.out.println("User Id From Session : "+user+",  SessionId Cookie : "+cookie);
+}
+@RequestMapping("lastsearch")
+public String showLastSearch() {
+	return "lastsearch";
+}
+@RequestMapping("verify")
+public ModelAndView verifyUser(@RequestParam("t1") String userid) {
+	ModelAndView mv=new ModelAndView("loginsuccess");
+	mv.addObject("userid", userid);
+	return mv;
+}
 	
+@RequestMapping("login")
+public String showLogin() {
+	return "login";
+}
 @RequestMapping("/newproduct")
 public String showProductEntryForm() {
 	return "productentry";
@@ -39,7 +63,7 @@ public String showSearchForm() {
 public ModelAndView searchProduct(@RequestParam("pcode") int id) {
 	Product product=productDAO.searchProduct(id);
 	ModelAndView mv=new ModelAndView("productdetails");
-	mv.addObject("product",product);
+	mv.addObject("product",product);//storing to session instead of request
 	return mv;
 }
 
